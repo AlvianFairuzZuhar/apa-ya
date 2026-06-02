@@ -720,7 +720,7 @@
                 <p id="s1-line3">Aku baru ingat ada seseorang yang ulang tahun hari ini!!!</p>
                 <p id="s1-line4">Dan orang itu adalah...</p>
             </div>
-            <h1 id="s1-name">&#10022; KAKKKK AVAAA &#10022;</h1>
+            <h1 id="s1-name">&#10022; KAK AVAA &#10022;</h1>
             <button class="btn-primary" id="btn-s1-next">Lanjut &#10022;</button>
         </div>
     </div>
@@ -837,6 +837,9 @@
     </div>
 
     <script>
+        /* ============================================================
+           REFERENSI DOM
+           ============================================================ */
         var bgMusic = document.getElementById('bgMusic');
         var loadingScreen = document.getElementById('loading-screen');
         var progressFill = document.getElementById('progress-fill');
@@ -877,7 +880,345 @@
         }
 
         /* ============================================================
-           AUDIO: Mulai dari detik ke-60 saat tombol diklik
+           SISTEM SFX (WEB AUDIO API)
+           Semua suara dihasilkan secara programatik —
+           tidak membutuhkan file eksternal sama sekali.
+           ============================================================ */
+        var sfxSystem = (function() {
+            var ctx = null;
+
+            /* Inisialisasi AudioContext (harus dipanggil dari gesture user) */
+            function getCtx() {
+                if (!ctx) {
+                    ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+                return ctx;
+            }
+
+            /* Membuat buffer noise putih sepanjang `duration` detik */
+            function createNoiseBuffer(duration) {
+                var c = getCtx();
+                var length = Math.floor(c.sampleRate * duration);
+                var buffer = c.createBuffer(1, length, c.sampleRate);
+                var data = buffer.getChannelData(0);
+                for (var i = 0; i < length; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                return buffer;
+            }
+
+            /* --- SPARKLE ---
+               Deretan nada tinggi pendek berurutan cepat.
+               Cocok untuk: klik tombol, momen "ajaib" */
+            function sparkle() {
+                var c = getCtx();
+                var now = c.currentTime;
+                var notes = [1200, 1500, 1800, 2200, 2600, 3000];
+                for (var i = 0; i < notes.length; i++) {
+                    (function(freq, delay) {
+                        var osc = c.createOscillator();
+                        var gain = c.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0, now + delay);
+                        gain.gain.linearRampToValueAtTime(0.07, now + delay + 0.015);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.25);
+                        osc.connect(gain);
+                        gain.connect(c.destination);
+                        osc.start(now + delay);
+                        osc.stop(now + delay + 0.3);
+                    })(notes[i], i * 0.05);
+                }
+            }
+
+            /* --- REVEAL ---
+               Arpeggio naik C5-E5-G5-C6 dengan shimmer octave.
+               Cocok untuk: reveal nama besar, judul final */
+            function reveal() {
+                var c = getCtx();
+                var now = c.currentTime;
+                var freqs = [523.25, 659.25, 783.99, 1046.50];
+                for (var i = 0; i < freqs.length; i++) {
+                    (function(freq, delay) {
+                        /* Nada utama */
+                        var osc = c.createOscillator();
+                        var gain = c.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0, now + delay);
+                        gain.gain.linearRampToValueAtTime(0.1, now + delay + 0.04);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.9);
+                        osc.connect(gain);
+                        gain.connect(c.destination);
+                        osc.start(now + delay);
+                        osc.stop(now + delay + 0.95);
+
+                        /* Shimmer satu oktaf di atas */
+                        var osc2 = c.createOscillator();
+                        var gain2 = c.createGain();
+                        osc2.type = 'sine';
+                        osc2.frequency.value = freq * 2;
+                        gain2.gain.setValueAtTime(0, now + delay);
+                        gain2.gain.linearRampToValueAtTime(0.035, now + delay + 0.04);
+                        gain2.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.6);
+                        osc2.connect(gain2);
+                        gain2.connect(c.destination);
+                        osc2.start(now + delay);
+                        osc2.stop(now + delay + 0.65);
+                    })(freqs[i], i * 0.13);
+                }
+            }
+
+            /* --- POP ---
+               Ledakan noise pendek + thud bass.
+               Cocok untuk: buka hadiah, celebration burst */
+            function pop() {
+                var c = getCtx();
+                var now = c.currentTime;
+
+                /* Noise burst */
+                var source = c.createBufferSource();
+                source.buffer = createNoiseBuffer(0.15);
+                var filter = c.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = 1200;
+                filter.Q.value = 1.2;
+                var gain = c.createGain();
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                source.connect(filter);
+                filter.connect(gain);
+                gain.connect(c.destination);
+                source.start(now);
+                source.stop(now + 0.15);
+
+                /* Tonal thud */
+                var osc = c.createOscillator();
+                var oscGain = c.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+                oscGain.gain.setValueAtTime(0.12, now);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                osc.connect(oscGain);
+                oscGain.connect(c.destination);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+
+            /* --- WHOOSH ---
+               Noise dengan sweep frekuensi turun.
+               Cocok untuk: transisi antar scene */
+            function whoosh() {
+                var c = getCtx();
+                var now = c.currentTime;
+                var source = c.createBufferSource();
+                source.buffer = createNoiseBuffer(0.45);
+                var filter = c.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(3500, now);
+                filter.frequency.exponentialRampToValueAtTime(150, now + 0.35);
+                filter.Q.value = 2.5;
+                var gain = c.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.13, now + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                source.connect(filter);
+                filter.connect(gain);
+                gain.connect(c.destination);
+                source.start(now);
+                source.stop(now + 0.45);
+            }
+
+            /* --- EXPLOSION ---
+               Ledakan noise lowpass + sub bass + crackle layer.
+               Cocok untuk: ledakan kembang api */
+            var lastExplosionTime = 0;
+            function explosion() {
+                /* Throttle: jangan mainkan lebih dari sekali setiap 280ms */
+                var now = Date.now();
+                if (now - lastExplosionTime < 280) return;
+                lastExplosionTime = now;
+
+                var c = getCtx();
+                var t = c.currentTime;
+
+                /* Noise ledakan utama */
+                var source = c.createBufferSource();
+                source.buffer = createNoiseBuffer(0.55);
+                var lpf = c.createBiquadFilter();
+                lpf.type = 'lowpass';
+                lpf.frequency.setValueAtTime(2500, t);
+                lpf.frequency.exponentialRampToValueAtTime(150, t + 0.45);
+                var gain = c.createGain();
+                gain.gain.setValueAtTime(0.18, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                source.connect(lpf);
+                lpf.connect(gain);
+                gain.connect(c.destination);
+                source.start(t);
+                source.stop(t + 0.55);
+
+                /* Sub bass thud */
+                var osc = c.createOscillator();
+                var oscGain = c.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(110, t);
+                osc.frequency.exponentialRampToValueAtTime(25, t + 0.35);
+                oscGain.gain.setValueAtTime(0.13, t);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+                osc.connect(oscGain);
+                oscGain.connect(c.destination);
+                osc.start(t);
+                osc.stop(t + 0.4);
+
+                /* Crackle layer (highpass noise) */
+                var source2 = c.createBufferSource();
+                source2.buffer = createNoiseBuffer(0.25);
+                var hpf = c.createBiquadFilter();
+                hpf.type = 'highpass';
+                hpf.frequency.value = 3500;
+                var gain2 = c.createGain();
+                gain2.gain.setValueAtTime(0.06, t + 0.03);
+                gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+                source2.connect(hpf);
+                hpf.connect(gain2);
+                gain2.connect(c.destination);
+                source2.start(t + 0.03);
+                source2.stop(t + 0.28);
+            }
+
+            /* --- CHIME ---
+               Nada lonceng lembut satu kali dengan overtones.
+               Cocok untuk: munculnya tiap baris teks */
+            function chime() {
+                var c = getCtx();
+                var now = c.currentTime;
+                var freq = 700 + Math.random() * 800;
+
+                /* Nada dasar */
+                var osc = c.createOscillator();
+                var gain = c.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.05, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.connect(gain);
+                gain.connect(c.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+
+                /* Overtone shimmer */
+                var osc2 = c.createOscillator();
+                var gain2 = c.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.value = freq * 2.5;
+                gain2.gain.setValueAtTime(0, now);
+                gain2.gain.linearRampToValueAtTime(0.018, now + 0.01);
+                gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                osc2.connect(gain2);
+                gain2.connect(c.destination);
+                osc2.start(now);
+                osc2.stop(now + 0.25);
+            }
+
+            /* --- CANDLE BLOW ---
+               Suara hembusan napas berfilter bandpass.
+               Cocok untuk: meniup lilin */
+            function candleBlow() {
+                var c = getCtx();
+                var now = c.currentTime;
+                var source = c.createBufferSource();
+                source.buffer = createNoiseBuffer(0.9);
+                var filter = c.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(1800, now);
+                filter.frequency.exponentialRampToValueAtTime(400, now + 0.7);
+                filter.Q.value = 0.8;
+                var gain = c.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.18, now + 0.08);
+                gain.gain.setValueAtTime(0.18, now + 0.25);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+                source.connect(filter);
+                filter.connect(gain);
+                gain.connect(c.destination);
+                source.start(now);
+                source.stop(now + 0.9);
+            }
+
+            /* --- SOFT RISE ---
+               Nada naik halus yang mengalun perlahan.
+               Cocok untuk: transisi akhir menuju final scene */
+            function softRise() {
+                var c = getCtx();
+                var now = c.currentTime;
+                var freqs = [392, 440, 523.25, 659.25, 783.99];
+                for (var i = 0; i < freqs.length; i++) {
+                    (function(freq, delay) {
+                        var osc = c.createOscillator();
+                        var gain = c.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0, now + delay);
+                        gain.gain.linearRampToValueAtTime(0.06, now + delay + 0.15);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 1.2);
+                        osc.connect(gain);
+                        gain.connect(c.destination);
+                        osc.start(now + delay);
+                        osc.stop(now + delay + 1.25);
+                    })(freqs[i], i * 0.2);
+                }
+            }
+
+            /* --- GIFT UNWRAP ---
+               Kombinasi rustle + pop untuk efek membuka kado */
+            function giftUnwrap() {
+                var c = getCtx();
+                var now = c.currentTime;
+
+                /* Rustle noise (seperti kertas) */
+                var source = c.createBufferSource();
+                source.buffer = createNoiseBuffer(0.4);
+                var bpf = c.createBiquadFilter();
+                bpf.type = 'bandpass';
+                bpf.frequency.setValueAtTime(4000, now);
+                bpf.frequency.linearRampToValueAtTime(2000, now + 0.3);
+                bpf.Q.value = 1.5;
+                var gain = c.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.12, now + 0.03);
+                gain.gain.linearRampToValueAtTime(0.08, now + 0.2);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                source.connect(bpf);
+                bpf.connect(gain);
+                gain.connect(c.destination);
+                source.start(now);
+                source.stop(now + 0.4);
+
+                /* Pop di akhir */
+                setTimeout(function() { pop(); }, 250);
+            }
+
+            return {
+                sparkle: sparkle,
+                reveal: reveal,
+                pop: pop,
+                whoosh: whoosh,
+                explosion: explosion,
+                chime: chime,
+                candleBlow: candleBlow,
+                softRise: softRise,
+                giftUnwrap: giftUnwrap
+            };
+        })();
+
+        /* ============================================================
+           AUDIO: Mulai dari detik ke-16 saat tombol diklik
            ============================================================ */
         function startMusic() {
             try {
@@ -929,7 +1270,9 @@
             }, 120);
         })();
 
+        /* Tombol Buka Kejutan — memulai musik + SFX sparkle */
         btnOpen.addEventListener('click', async function() {
+            sfxSystem.sparkle();
             startMusic();
             loadingScreen.style.opacity = '0';
             loadingScreen.style.transition = 'opacity 0.8s ease';
@@ -960,13 +1303,16 @@
             scene1.classList.add('active');
             currentScene = scene1;
 
+            /* Teks muncul satu per satu + chime per baris */
             for (var i = 0; i < lines.length; i++) {
                 await wait(900);
                 lines[i].classList.add('show');
+                sfxSystem.chime();
             }
 
             await wait(1200);
             nameEl.classList.add('show');
+            sfxSystem.reveal();
             confettiSystem.burst(120);
 
             await wait(1000);
@@ -974,6 +1320,7 @@
         }
 
         document.getElementById('btn-s1-next').addEventListener('click', async function() {
+            sfxSystem.whoosh();
             await switchScene(scene1, scene2);
             await runScene2();
         });
@@ -994,22 +1341,30 @@
 
             startAmbient('stars');
 
-            for (var i = 0; i < lines.length; i++) {
-                await wait(800);
-                lines[i].classList.add('show');
-            }
+            /* Baris pertama: pop sebagai "ledakan" celebration */
+            await wait(600);
+            lines[0].classList.add('show');
+            sfxSystem.pop();
+
+            await wait(800);
+            lines[1].classList.add('show');
+            sfxSystem.sparkle();
+
+            await wait(600);
+            lines[2].classList.add('show');
 
             await wait(600);
             btnNext.classList.add('show');
         }
 
         document.getElementById('btn-s2-next').addEventListener('click', async function() {
+            sfxSystem.whoosh();
             await switchScene(scene2, scene3);
             await runScene3();
         });
 
         /* ============================================================
-           SCENE 3 — BIRTHDAY MESSAGE (tanpa foto slider)
+           SCENE 3 — BIRTHDAY MESSAGE
            ============================================================ */
         async function runScene3() {
             var paragraphs = document.querySelectorAll('#s3-text-container p');
@@ -1021,6 +1376,7 @@
             for (var i = 0; i < paragraphs.length; i++) {
                 await wait(600);
                 paragraphs[i].classList.add('show');
+                sfxSystem.chime();
             }
 
             await wait(800);
@@ -1028,6 +1384,7 @@
         }
 
         document.getElementById('btn-s3-next').addEventListener('click', async function() {
+            sfxSystem.whoosh();
             await switchScene(scene3, scene4);
             await runScene4();
         });
@@ -1061,16 +1418,19 @@
 
             giftBox.classList.add('opened');
             giftHint.style.opacity = '0';
+            sfxSystem.giftUnwrap();
             confettiSystem.burst(100);
 
             await wait(1000);
             giftReveal.classList.add('show');
+            sfxSystem.sparkle();
 
             await wait(800);
             btnNext.classList.add('show');
         });
 
         document.getElementById('btn-s4-next').addEventListener('click', async function() {
+            sfxSystem.whoosh();
             await switchScene(scene4, scene5);
             await runScene5();
         });
@@ -1100,6 +1460,9 @@
             var flameWrapper = document.getElementById('flame-wrapper');
             var smokeContainer = document.getElementById('smoke-container');
 
+            /* SFX hembusan napas */
+            sfxSystem.candleBlow();
+
             flameWrapper.classList.add('out');
 
             for (var i = 0; i < 6; i++) {
@@ -1120,15 +1483,22 @@
             }
 
             await wait(600);
+
+            /* Kembang api — setiap ledakan memicu SFX explosion */
             fireworksSystem.startSequence(8);
 
-            await wait(4500);
+            await wait(4200);
+
+            /* Soft rise sebelum masuk final scene */
+            sfxSystem.softRise();
+
+            await wait(800);
             await switchScene(scene5, scene6);
             await runScene6();
         });
 
         /* ============================================================
-           SCENE 6 — FINAL SCENE (dengan foto slider)
+           SCENE 6 — FINAL SCENE
            ============================================================ */
         async function runScene6() {
             var titleEl = document.getElementById('final-title');
@@ -1143,14 +1513,17 @@
 
             await wait(500);
             titleEl.classList.add('show');
+            sfxSystem.chime();
 
             await wait(800);
             nameEl.classList.add('show');
+            sfxSystem.reveal();
 
             await wait(600);
             for (var i = 0; i < paragraphs.length; i++) {
                 await wait(500);
                 paragraphs[i].classList.add('show');
+                sfxSystem.chime();
             }
         }
 
@@ -1222,6 +1595,7 @@
 
         /* ============================================================
            SISTEM KEMBANG API (CANVAS) — Warna putih & khaki saja
+           Setiap ledakan memanggil sfxSystem.explosion()
            ============================================================ */
         var fireworksSystem = (function() {
             var rockets = [];
@@ -1262,6 +1636,8 @@
                         trail: []
                     });
                 }
+                /* Mainkan SFX ledakan (sudah di-throttle internal) */
+                sfxSystem.explosion();
             }
 
             function animate() {
