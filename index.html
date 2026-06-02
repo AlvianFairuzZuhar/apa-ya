@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>✨ Happy Birthday Shofia Alva Siba ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep:#0d0221;--dark:#1a0a2e;--mid:#2d1b69;
+  --pink:#ff6b9d;--hot:#ff2d75;--rose:#c44569;
+  --gold:#ffd700;--gold-l:#fff0a0;--gold-d:#c9a800;
+  --night:#0a0a2e;--star:#fff8dc;--white:#fff;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--deep);font-family:'Pacifico',cursive;color:var(--white)}
+canvas{position:fixed;inset:0;width:100%;height:100%}
+#bgCanvas{z-index:0}
+#fxCanvas{z-index:100;pointer-events:none}
+
+/* ---------- SCENE SYSTEM ---------- */
+.scene{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  opacity:0;pointer-events:none;transition:opacity .9s ease,transform .9s ease;transform:scale(.97);z-index:10;padding:20px;text-align:center;overflow-y:auto}
+.scene.active{opacity:1;pointer-events:auto;transform:scale(1)}
+.scene .line{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
+.scene .line.visible{opacity:1;transform:translateY(0)}
+
+/* ---------- LOADING ---------- */
+#loading{z-index:200;background:var(--deep);flex-direction:column;gap:30px}
+.load-star{width:70px;height:70px;background:var(--gold);
+  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+  animation:spinStar 2s linear infinite;filter:drop-shadow(0 0 15px rgba(255,215,0,.6))}
+@keyframes spinStar{to{transform:rotate(360deg)}}
+.load-text{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold-l);letter-spacing:2px}
+.progress-wrap{width:260px;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;position:relative}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-d),var(--gold),var(--gold-l),var(--gold));
+  background-size:300% 100%;animation:shimmerBg 1.5s infinite;border-radius:3px;transition:width .3s}
+@keyframes shimmerBg{0%{background-position:300% 0}100%{background-position:-300% 0}}
+.start-btn{display:none;margin-top:10px;padding:14px 40px;background:transparent;border:2px solid var(--gold);
+  color:var(--gold);font-family:'Cinzel',serif;font-size:1rem;border-radius:50px;cursor:pointer;
+  letter-spacing:2px;transition:all .3s;animation:pulse 2s infinite}
+.start-btn:hover{background:var(--gold);color:var(--deep);box-shadow:0 0 30px rgba(255,215,0,.4)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,.4)}50%{box-shadow:0 0 0 12px rgba(255,215,0,0)}}
+
+/* ---------- SCENE 1 ---------- */
+#scene1{background:transparent}
+.s1-text{font-family:'Cinzel',serif;font-size:clamp(1.4rem,5vw,2.8rem);font-weight:700;min-height:1.4em}
+.s1-name{font-family:'Cinzel',serif;font-size:clamp(2rem,8vw,5rem);font-weight:900;
+  background:linear-gradient(90deg,var(--gold),var(--gold-l),var(--gold),var(--pink),var(--gold));
+  background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;animation:shimmerBg 3s infinite linear;
+  text-shadow:none;filter:drop-shadow(0 0 20px rgba(255,215,0,.5));opacity:0;transform:scale(0);
+  transition:opacity .6s,transform .6s}
+.s1-name.show{opacity:1;transform:scale(1)}
+.shake{animation:shake .4s ease-in-out}
+@keyframes shake{0%,100%{transform:translate(0)}20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-2px)}60%{transform:translate(-2px,-1px)}80%{transform:translate(2px,1px)}}
+
+/* ---------- SCENE 2 ---------- */
+#scene2{background:transparent}
+.s2-big{font-family:'Pacifico',cursive;font-size:clamp(2.5rem,10vw,6rem);color:var(--pink);
+  text-shadow:0 0 30px rgba(255,107,157,.5),0 0 60px rgba(255,107,157,.3);animation:popIn .5s ease both}
+.s2-emoji{font-size:clamp(2rem,8vw,4rem);animation:popIn .5s ease both}
+@keyframes popIn{0%{transform:scale(0) rotate(-10deg);opacity:0}70%{transform:scale(1.15) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+
+/* ---------- SCENE 3 ---------- */
+#scene3{background:transparent}
+.s3-line{font-family:'Pacifico',cursive;font-size:clamp(1rem,3.5vw,1.6rem);color:var(--star);line-height:1.8;margin:4px 0}
+.s3-highlight{font-size:clamp(1.6rem,6vw,3rem) !important;color:var(--gold) !important;
+  text-shadow:0 0 15px rgba(255,215,0,.5),0 0 30px rgba(255,215,0,.3);animation:glowPulse 2s infinite}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 15px rgba(255,215,0,.5),0 0 30px rgba(255,215,0,.3)}50%{text-shadow:0 0 25px rgba(255,215,0,.8),0 0 50px rgba(255,215,0,.5)}}
+
+/* ---------- SCENE 4 ---------- */
+#scene4{background:transparent}
+.gift-wrap{display:flex;flex-direction:column;align-items:center;gap:30px}
+.gift-box{position:relative;width:180px;height:160px;cursor:default;margin:10px 0}
+.gift-base{position:absolute;bottom:0;left:0;width:180px;height:110px;
+  background:linear-gradient(135deg,#ff2d75,#c44569);border-radius:8px;
+  box-shadow:0 8px 30px rgba(255,45,117,.3)}
+.gift-base::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:100%;background:var(--gold)}
+.gift-base::after{content:'';position:absolute;top:50%;left:0;transform:translateY(-50%);width:100%;height:28px;background:var(--gold)}
+.gift-lid{position:absolute;top:10px;left:-10px;width:200px;height:32px;
+  background:linear-gradient(135deg,#ff4488,#d4507a);border-radius:8px 8px 4px 4px;
+  transition:transform .8s cubic-bezier(.68,-.55,.27,1.55);transform-origin:left bottom;z-index:2;
+  box-shadow:0 -2px 15px rgba(255,68,136,.3)}
+.gift-lid::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:100%;background:var(--gold)}
+.gift-bow{position:absolute;top:-12px;left:50%;transform:translateX(-50%);z-index:3;transition:opacity .4s}
+.gift-bow::before,.gift-bow::after{content:'';position:absolute;width:32px;height:24px;
+  background:var(--gold);border-radius:50% 50% 10% 50%;top:8px}
+.gift-bow::before{left:-28px;transform:rotate(-20deg)}
+.gift-bow::after{right:-28px;transform:rotate(20deg) scaleX(-1)}
+.gift-box.opened .gift-lid{transform:rotate(-130deg) translateY(-10px)}
+.gift-box.opened .gift-bow{opacity:0}
+.gift-glow{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:140px;height:110px;
+  background:radial-gradient(ellipse,rgba(255,215,0,.4),transparent);opacity:0;transition:opacity .8s;border-radius:50%}
+.gift-box.opened .gift-glow{opacity:1}
+.gift-reveal{opacity:0;transition:opacity .8s;pointer-events:none;text-align:center}
+.gift-reveal.show{opacity:1}
+.gift-reveal-text{font-family:'Cinzel',serif;font-size:clamp(1rem,3vw,1.3rem);color:var(--star);margin:5px 0}
+.gift-reveal-big{font-family:'Cinzel',serif;font-size:clamp(1.1rem,4vw,1.8rem);font-weight:700;
+  background:linear-gradient(90deg,var(--gold),var(--pink),var(--gold));
+  background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmerBg 2s infinite linear}
+
+.open-btn{padding:16px 44px;font-family:'Cinzel',serif;font-size:clamp(1rem,3vw,1.3rem);font-weight:700;
+  color:var(--deep);background:linear-gradient(135deg,var(--gold),var(--gold-l),var(--gold));
+  border:none;border-radius:50px;cursor:pointer;position:relative;overflow:hidden;
+  box-shadow:0 0 30px rgba(255,215,0,.4),0 4px 20px rgba(0,0,0,.3);
+  animation:btnPulse 2s infinite;transition:transform .2s}
+.open-btn:hover{transform:scale(1.05)}
+.open-btn:active{transform:scale(.97)}
+@keyframes btnPulse{0%,100%{box-shadow:0 0 20px rgba(255,215,0,.3),0 4px 20px rgba(0,0,0,.3)}50%{box-shadow:0 0 40px rgba(255,215,0,.6),0 4px 20px rgba(0,0,0,.3)}}
+.open-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  animation:btnShine 2.5s infinite}
+@keyframes btnShine{0%{left:-100%}50%,100%{left:150%}}
+
+/* ---------- SCENE 5 — CAKE ---------- */
+#scene5{background:transparent}
+.cake-scene{display:flex;flex-direction:column;align-items:center;gap:24px}
+.cake-container{position:relative;display:flex;flex-direction:column;align-items:center}
+.candles-row{display:flex;gap:18px;margin-bottom:-4px;z-index:3;position:relative}
+.candle{width:7px;height:38px;background:linear-gradient(to bottom,#fff8dc,#ffd700,#e6ac00);
+  border-radius:2px 2px 0 0;position:relative}
+.candle::before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:3px;height:6px;background:#333;border-radius:1px}
+.flame-wrap{position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:14px;height:20px}
+.flame{width:100%;height:100%;background:radial-gradient(ellipse at 50% 90%,#fff 0%,#ffd700 30%,#ff8c00 60%,transparent 100%);
+  border-radius:50% 50% 50% 50%/60% 60% 40% 40%;animation:flicker .15s infinite alternate;filter:blur(.5px)}
+.flame.out{animation:blowOut .6s forwards}
+@keyframes flicker{0%{transform:scaleX(1) scaleY(1) rotate(-2deg)}100%{transform:scaleX(.9) scaleY(1.08) rotate(2deg)}}
+@keyframes blowOut{0%{opacity:1;transform:scale(1)}40%{opacity:.6;transform:scale(1.3,1.6) translateY(-5px)}100%{opacity:0;transform:scale(0) translateY(-15px)}}
+.smoke-p{position:absolute;width:6px;height:6px;background:rgba(180,180,200,.5);border-radius:50%;
+  animation:smokeUp 1.5s ease-out forwards;pointer-events:none}
+@keyframes smokeUp{0%{opacity:.5;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-45px) translateX(8px) scale(2.5)}}
+.tier{border-radius:10px;position:relative;box-shadow:inset 0 -5px 15px rgba(0,0,0,.15)}
+.tier-top{width:120px;height:48px;background:linear-gradient(135deg,#ffb6d3,#ff85ad);z-index:2}
+.tier-mid{width:160px;height:58px;background:linear-gradient(135deg,#f099c0,#e06da5);margin-top:-4px;z-index:1}
+.tier-bot{width:200px;height:68px;background:linear-gradient(135deg,#d87daa,#c55a90);margin-top:-4px}
+.frosting{position:absolute;top:-7px;left:-4px;right:-4px;height:14px;background:rgba(255,240,245,.9);border-radius:0 0 50% 50%}
+.drip{position:absolute;top:5px;width:12px;background:rgba(255,240,245,.85);border-radius:0 0 50% 50%}
+.plate{width:240px;height:16px;background:linear-gradient(to bottom,#e8e0e0,#ccc);border-radius:0 0 50% 50%;
+  margin-top:-2px;box-shadow:0 4px 15px rgba(0,0,0,.3)}
+.cake-dots{position:absolute;inset:0;overflow:hidden;border-radius:10px}
+.cake-dot{position:absolute;width:5px;height:5px;border-radius:50%;opacity:.7}
+.blow-btn{padding:14px 40px;font-family:'Cinzel',serif;font-size:clamp(.95rem,3vw,1.2rem);font-weight:700;
+  color:var(--deep);background:linear-gradient(135deg,var(--gold),var(--gold-l));
+  border:none;border-radius:50px;cursor:pointer;box-shadow:0 0 25px rgba(255,215,0,.4);transition:all .3s;animation:btnPulse 2s infinite}
+.blow-btn:hover{transform:scale(1.05)}
+.blow-btn:disabled{opacity:.4;cursor:default;animation:none;transform:none}
+
+/* ---------- SCENE 6 ---------- */
+#scene6{background:transparent}
+.s6-title{font-family:'Cinzel',serif;font-size:clamp(1.8rem,7vw,4rem);font-weight:900;
+  background:linear-gradient(90deg,var(--gold),var(--gold-l),var(--pink),var(--gold-l),var(--gold));
+  background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmerBg 4s infinite linear;filter:drop-shadow(0 0 20px rgba(255,215,0,.4))}
+.s6-name{font-family:'Cinzel',serif;font-size:clamp(1.3rem,5vw,2.8rem);font-weight:700;color:var(--star);margin:6px 0 30px;
+  text-shadow:0 0 15px rgba(255,248,220,.3)}
+.s6-line{font-family:'Pacifico',cursive;font-size:clamp(.95rem,3vw,1.4rem);color:var(--star);line-height:2;opacity:0;transform:translateY(15px);transition:all .8s}
+.s6-line.visible{opacity:1;transform:translateY(0)}
+.s6-heart{color:var(--pink);font-size:1.3em;animation:heartbeat 1.5s infinite}
+@keyframes heartbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.2)}30%{transform:scale(1)}45%{transform:scale(1.15)}}
+
+/* ---------- LIGHT SWEEP ---------- */
+.light-sweep{position:relative;overflow:hidden}
+.light-sweep::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.15) 45%,rgba(255,255,255,.25) 50%,rgba(255,255,255,.15) 55%,transparent 60%);
+  transform:translateX(-100%);pointer-events:none}
+.light-sweep.sweeping::after{animation:sweepOnce .8s ease forwards}
+@keyframes sweepOnce{to{transform:translateX(100%)}}
+
+/* ---------- YOUTUBE CONTAINER ---------- */
+#ytWrap{position:fixed;top:-999px;left:-999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:480px){
+  .gift-box{transform:scale(.85)}
+  .cake-container{transform:scale(.8)}
+}
+</style>
+</head>
+<body>
+
+<!-- Background Canvas (Stars) -->
+<canvas id="bgCanvas"></canvas>
+<!-- FX Canvas (Fireworks + Confetti) -->
+<canvas id="fxCanvas"></canvas>
+
+<!-- LOADING SCREEN -->
+<div id="loading" class="scene active">
+  <div class="load-star"></div>
+  <div class="load-text">Mempersiapkan Kejutan...</div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <button class="start-btn" id="startBtn">Klik untuk Mulai ✨</button>
+</div>
+
+<!-- SCENE 1 — Opening Cinematic -->
+<div id="scene1" class="scene">
+  <div class="s1-text line" id="s1t1"></div>
+  <div class="s1-text line" id="s1t2" style="margin-top:12px"></div>
+  <div class="s1-text line" id="s1t3" style="margin-top:12px"></div>
+  <div class="s1-text line" id="s1t4" style="margin-top:12px;color:var(--gold-l)"></div>
+  <div class="s1-name" id="s1Name" style="margin-top:30px">✨ SHOFIA ALVA SIBA ✨</div>
+</div>
+
+<!-- SCENE 2 — Celebration Explosion -->
+<div id="scene2" class="scene">
+  <div class="s2-big" id="s2yay" style="opacity:0">YEAAYYY!!!</div>
+  <div class="s2-big" id="s2hbd" style="opacity:0;margin-top:10px">HAPPY BIRTHDAYYY!!!</div>
+  <div class="s2-emoji" id="s2emoji" style="opacity:0;margin-top:16px">🥳🎉🎂🎁🎊</div>
+</div>
+
+<!-- SCENE 3 — Birthday Message -->
+<div id="scene3" class="scene">
+  <div class="s3-line line" data-delay="0">Halo Kakkk!!</div>
+  <div class="s3-line line" data-delay="1">Aku baru inget hari ini adalah hari spesialmu!</div>
+  <div class="s3-line line" data-delay="2">Aku cuma mau bilang...</div>
+  <div class="s3-line line s3-highlight" data-delay="3">SELAMAT ULANG TAHUNNNN!!! 🎉</div>
+  <div class="s3-line line" data-delay="4">Semoga harimu menyenangkan!</div>
+  <div class="s3-line line" data-delay="5">Semoga semua impianmu satu per satu menjadi kenyataan!</div>
+  <div class="s3-line line" data-delay="6">Semoga selalu sehat!</div>
+  <div class="s3-line line" data-delay="7">Semoga selalu bahagia!</div>
+  <div class="s3-line line" data-delay="8">Semoga selalu dikelilingi orang-orang baik!</div>
+  <div class="s3-line line" data-delay="9">Dan semoga rezekimu makin lancar!</div>
+  <div class="s3-line line" data-delay="10">Terima kasih sudah menjadi kakak yang luar biasa!</div>
+  <div class="s3-line line" data-delay="11">Pokoknya semoga tahun ini menjadi tahun terbaik untuk Kak Avaa! ✨</div>
+</div>
+
+<!-- SCENE 4 — Buka Hadiah -->
+<div id="scene4" class="scene">
+  <div class="gift-wrap">
+    <div class="gift-box light-sweep" id="giftBox">
+      <div class="gift-bow"></div>
+      <div class="gift-lid"></div>
+      <div class="gift-base"></div>
+      <div class="gift-glow"></div>
+    </div>
+    <button class="open-btn" id="openGiftBtn">🎁 Buka Hadiah</button>
+    <div class="gift-reveal" id="giftReveal">
+      <div class="gift-reveal-text">Hadiahnya adalah...</div>
+      <div class="gift-reveal-big">DOA DAN UCAPAN TERBAIK DARI ADIKMU! ❤️</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 5 — Cake -->
+<div id="scene5" class="scene">
+  <div class="cake-scene">
+    <div class="cake-container" id="cakeContainer">
+      <div class="candles-row" id="candlesRow">
+        <div class="candle"><div class="flame-wrap"><div class="flame" data-flame></div></div></div>
+        <div class="candle"><div class="flame-wrap"><div class="flame" data-flame></div></div></div>
+        <div class="candle"><div class="flame-wrap"><div class="flame" data-flame></div></div></div>
+        <div class="candle"><div class="flame-wrap"><div class="flame" data-flame></div></div></div>
+        <div class="candle"><div class="flame-wrap"><div class="flame" data-flame></div></div></div>
+      </div>
+      <div class="tier tier-top"><div class="frosting"></div>
+        <div class="cake-dots" id="dotsTop"></div>
+      </div>
+      <div class="tier tier-mid"><div class="frosting"><div class="drip" style="left:15px;height:18px"></div><div class="drip" style="left:60px;height:14px"></div><div class="drip" style="right:20px;height:20px"></div></div>
+        <div class="cake-dots" id="dotsMid"></div>
+      </div>
+      <div class="tier tier-bot"><div class="frosting"><div class="drip" style="left:25px;height:16px"></div><div class="drip" style="left:80px;height:22px"></div><div class="drip" style="right:30px;height:18px"></div><div class="drip" style="right:90px;height:12px"></div></div>
+        <div class="cake-dots" id="dotsBot"></div>
+      </div>
+      <div class="plate"></div>
+    </div>
+    <button class="blow-btn" id="blowBtn">🎂 Tiup Lilin</button>
+  </div>
+</div>
+
+<!-- SCENE 6 — Final -->
+<div id="scene6" class="scene">
+  <div class="s6-title">✨ HAPPY BIRTHDAY ✨</div>
+  <div class="s6-name">SHOFIA ALVA SIBA</div>
+  <div class="s6-line" data-delay="0">Semoga harimuu penuh senyum.</div>
+  <div class="s6-line" data-delay="1">Semoga tahun ini penuh keberuntungan.</div>
+  <div class="s6-line" data-delay="2">Semoga semua hal baik datang kepadamu.</div>
+  <div class="s6-line" data-delay="3">Dari adikmu yang selalu mendoakan yang terbaik untukmu <span class="s6-heart">❤️</span></div>
+</div>
+
+<!-- YouTube Container -->
+<div id="ytWrap">
+  <div id="ytPlayer"></div>
+</div>
+
+<script>
+/* ============================================================
+   AUDIO SYSTEM — Web Audio API
+   ============================================================ */
+let audioCtx, ambientNodes = [], ambientLfo;
+function initAudio() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+function playChime() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(1200 + Math.random() * 400, t);
+  osc.frequency.exponentialRampToValueAtTime(600, t + .4);
+  g.gain.setValueAtTime(.12, t);
+  g.gain.exponentialRampToValueAtTime(.001, t + .5);
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start(t); osc.stop(t + .5);
+}
+
+function playFanfare() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  [523, 659, 784, 1047, 1319].forEach((f, i) => {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = f;
+    const start = t + i * .12;
+    g.gain.setValueAtTime(0, start);
+    g.gain.linearRampToValueAtTime(.18, start + .04);
+    g.gain.exponentialRampToValueAtTime(.001, start + .5);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(start); osc.stop(start + .5);
+  });
+}
+
+function playCheering() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const dur = 1.8;
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * dur, audioCtx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1);
+  const src = audioCtx.createBufferSource(); src.buffer = buf;
+  const bp = audioCtx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2500; bp.Q.value = .4;
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(.12, t + .08);
+  g.gain.setValueAtTime(.12, t + .6);
+  g.gain.linearRampToValueAtTime(.08, t + 1.2);
+  g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  src.connect(bp); bp.connect(g); g.connect(audioCtx.destination);
+  src.start(t); src.stop(t + dur);
+}
+
+function playSparkle() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  for (let i = 0; i < 5; i++) {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 2000 + Math.random() * 3000;
+    const s = t + i * .06;
+    g.gain.setValueAtTime(.06, s);
+    g.gain.exponentialRampToValueAtTime(.001, s + .2);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(s); osc.stop(s + .2);
+  }
+}
+
+function playClap() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  for (let n = 0; n < 8; n++) {
+    const dur = .08;
+    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * dur, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * .015));
+    const src = audioCtx.createBufferSource(); src.buffer = buf;
+    const hp = audioCtx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 800;
+    const g = audioCtx.createGain();
+    const s = t + n * .12 + Math.random() * .04;
+    g.gain.setValueAtTime(.15, s);
+    g.gain.exponentialRampToValueAtTime(.001, s + dur);
+    src.connect(hp); hp.connect(g); g.connect(audioCtx.destination);
+    src.start(s); src.stop(s + dur);
+  }
+}
+
+function startAmbient() {
+  if (!audioCtx) return;
+  const freqs = [220, 277.18, 329.63, 440];
+  freqs.forEach(f => {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    const flt = audioCtx.createBiquadFilter();
+    osc.type = 'sine'; osc.frequency.value = f;
+    flt.type = 'lowpass'; flt.frequency.value = 600;
+    g.gain.value = 0;
+    g.gain.linearRampToValueAtTime(.025, audioCtx.currentTime + 2);
+    osc.connect(flt); flt.connect(g); g.connect(audioCtx.destination);
+    osc.start();
+    ambientNodes.push({ osc, gain: g });
+  });
+  ambientLfo = audioCtx.createOscillator();
+  const lfoG = audioCtx.createGain();
+  ambientLfo.type = 'sine'; ambientLfo.frequency.value = .15;
+  lfoG.gain.value = 30;
+  ambientLfo.connect(lfoG);
+  if (ambientNodes[0]) lfoG.connect(ambientNodes[0].osc.frequency);
+  ambientLfo.start();
+}
+
+function stopAmbient() {
+  ambientNodes.forEach(n => {
+    n.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.5);
+    setTimeout(() => { try { n.osc.stop(); } catch(e){} }, 2000);
+  });
+  if (ambientLfo) { try { ambientLfo.stop(); } catch(e){} }
+  ambientNodes = [];
+}
+
+/* ============================================================
+   CANVAS — BACKGROUND STARS
+   ============================================================ */
+const bgC = document.getElementById('bgCanvas');
+const bgX = bgC.getContext('2d');
+let W, H, stars = [], shootingStars = [], mouseX = 0, mouseY = 0;
+
+function resize() {
+  W = bgC.width = fxC.width = window.innerWidth;
+  H = bgC.height = fxC.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 250; i++) {
+    stars.push({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 1.8 + .3,
+      a: Math.random(), da: (Math.random() - .5) * .02,
+      depth: Math.random() * 3 + 1
+    });
+  }
+}
+initStars();
+
+function spawnShootingStar() {
+  if (Math.random() > .012) return;
+  shootingStars.push({
+    x: Math.random() * W, y: Math.random() * H * .4,
+    vx: 4 + Math.random() * 4, vy: 2 + Math.random() * 2,
+    life: 1, decay: .015 + Math.random() * .01
+  });
+}
+
+document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+document.addEventListener('touchmove', e => { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; }, { passive: true });
+
+function drawBg() {
+  bgX.clearRect(0, 0, W, H);
+  /* gradient background */
+  const grad = bgX.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * .7);
+  grad.addColorStop(0, '#1a0a2e');
+  grad.addColorStop(.5, '#0d0221');
+  grad.addColorStop(1, '#050112');
+  bgX.fillStyle = grad;
+  bgX.fillRect(0, 0, W, H);
+
+  const px = (mouseX - W / 2) / W;
+  const py = (mouseY - H / 2) / H;
+
+  stars.forEach(s => {
+    s.a += s.da;
+    if (s.a > 1 || s.a < .2) s.da *= -1;
+    const ox = px * s.depth * 15;
+    const oy = py * s.depth * 15;
+    bgX.beginPath();
+    bgX.arc(s.x + ox, s.y + oy, s.r, 0, Math.PI * 2);
+    bgX.fillStyle = `rgba(255,248,220,${s.a * .8})`;
+    bgX.fill();
+    if (s.r > 1.2) {
+      bgX.beginPath();
+      bgX.arc(s.x + ox, s.y + oy, s.r * 2.5, 0, Math.PI * 2);
+      bgX.fillStyle = `rgba(255,248,220,${s.a * .1})`;
+      bgX.fill();
+    }
+  });
+
+  spawnShootingStar();
+  shootingStars.forEach(ss => {
+    ss.x += ss.vx; ss.y += ss.vy; ss.life -= ss.decay;
+    bgX.beginPath();
+    bgX.moveTo(ss.x, ss.y);
+    bgX.lineTo(ss.x - ss.vx * 8, ss.y - ss.vy * 8);
+    bgX.strokeStyle = `rgba(255,248,220,${ss.life})`;
+    bgX.lineWidth = 1.5;
+    bgX.stroke();
+  });
+  shootingStars = shootingStars.filter(s => s.life > 0);
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+/* ============================================================
+   CANVAS — FX (Fireworks + Confetti)
+   ============================================================ */
+const fxC = document.getElementById('fxCanvas');
+const fxX = fxC.getContext('2d');
+let fireworks = [], confetti = [], fxRunning = false;
+
+const fwColors = ['#ff6b9d','#ffd700','#00e5ff','#ff2d75','#7c4dff','#69f0ae','#ff8a65','#fff176'];
+function rndColor() { return fwColors[Math.floor(Math.random() * fwColors.length)]; }
+
+class FWParticle {
+  constructor(x, y, color) {
+    this.x = x; this.y = y;
+    const a = Math.random() * Math.PI * 2;
+    const sp = Math.random() * 5 + 1.5;
+    this.vx = Math.cos(a) * sp; this.vy = Math.sin(a) * sp;
+    this.a = 1; this.color = color;
+    this.decay = .012 + Math.random() * .018;
+    this.gravity = .04; this.r = Math.random() * 2 + 1;
+  }
+  update() { this.x += this.vx; this.y += this.vy; this.vy += this.gravity; this.a -= this.decay; this.vx *= .985; }
+  draw(c) {
+    c.save(); c.globalAlpha = Math.max(0, this.a);
+    c.beginPath(); c.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    c.fillStyle = this.color; c.fill();
+    /* glow */
+    c.beginPath(); c.arc(this.x, this.y, this.r * 3, 0, Math.PI * 2);
+    c.fillStyle = this.color.replace(')', ',.15)').replace('rgb', 'rgba').replace('#', '');
+    /* simpler glow */
+    c.globalAlpha = Math.max(0, this.a * .2);
+    c.fillStyle = this.color; c.fill();
+    c.restore();
+  }
+}
+
+class Firework {
+  constructor(x, targetY) {
+    this.x = x; this.y = H;
+    this.targetY = targetY;
+    this.speed = 4 + Math.random() * 3;
+    this.particles = []; this.exploded = false;
+    this.color = rndColor(); this.trail = [];
+  }
+  update() {
+    if (!this.exploded) {
+      this.trail.push({ x: this.x, y: this.y, a: 1 });
+      if (this.trail.length > 8) this.trail.shift();
+      this.trail.forEach(t => t.a -= .12);
+      this.y -= this.speed;
+      if (this.y <= this.targetY) this.explode();
+    } else {
+      this.particles.forEach(p => p.update());
+      this.particles = this.particles.filter(p => p.a > 0);
+    }
+  }
+  explode() {
+    this.exploded = true;
+    const count = 60 + Math.random() * 60;
+    for (let i = 0; i < count; i++) this.particles.push(new FWParticle(this.x, this.y, this.color));
+  }
+  draw(c) {
+    if (!this.exploded) {
+      this.trail.forEach(t => {
+        c.save(); c.globalAlpha = Math.max(0, t.a);
+        c.beginPath(); c.arc(t.x, t.y, 2, 0, Math.PI * 2);
+        c.fillStyle = this.color; c.fill(); c.restore();
+      });
+      c.beginPath(); c.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+      c.fillStyle = '#fff'; c.fill();
+    } else {
+      this.particles.forEach(p => p.draw(c));
+    }
+  }
+  get done() { return this.exploded && this.particles.length === 0; }
+}
+
+class Confetto {
+  constructor() {
+    this.x = Math.random() * W; this.y = -15;
+    this.w = 5 + Math.random() * 7; this.h = 3 + Math.random() * 5;
+    this.color = rndColor();
+    this.vy = 1.5 + Math.random() * 3;
+    this.vx = (Math.random() - .5) * 2;
+    this.rot = Math.random() * 360; this.rs = (Math.random() - .5) * 12;
+    this.t = Math.random() * 100; this.osc = .02 + Math.random() * .02;
+    this.od = 1 + Math.random() * 2;
+  }
+  update() { this.y += this.vy; this.t += this.osc; this.x += this.vx + Math.sin(this.t) * this.od; this.rot += this.rs; }
+  draw(c) {
+    c.save(); c.translate(this.x, this.y); c.rotate(this.rot * Math.PI / 180);
+    c.fillStyle = this.color; c.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+    c.restore();
+  }
+  get off() { return this.y > H + 20; }
+}
+
+function spawnFireworks(count, duration) {
+  fxRunning = true;
+  let spawned = 0;
+  const iv = setInterval(() => {
+    if (spawned >= count) { clearInterval(iv); return; }
+    fireworks.push(new Firework(W * .15 + Math.random() * W * .7, H * .1 + Math.random() * H * .35));
+    spawned++;
+  }, duration / count);
+}
+
+function spawnConfetti(count) {
+  fxRunning = true;
+  for (let i = 0; i < count; i++) setTimeout(() => confetti.push(new Confetto()), i * 20);
+}
+
+function drawFx() {
+  fxX.clearRect(0, 0, W, H);
+  fireworks.forEach(f => { f.update(); f.draw(fxX); });
+  fireworks = fireworks.filter(f => !f.done);
+  confetti.forEach(c => { c.update(); c.draw(fxX); });
+  confetti = confetti.filter(c => !c.off);
+  if (fxRunning && fireworks.length === 0 && confetti.length === 0) fxRunning = false;
+  requestAnimationFrame(drawFx);
+}
+drawFx();
+
+/* ============================================================
+   YOUTUBE IFRAME API
+   ============================================================ */
+let ytReady = false, ytPlayer = null;
+const tag = document.createElement('script');
+tag.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(tag);
+
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player('ytPlayer', {
+    height: '1', width: '1',
+    videoId: 'cUnYmncAvP4',
+    playerVars: { start: 60, autoplay: 0, controls: 0, fs: 0, modestbranding: 1, rel: 0 },
+    events: { onReady: () => { ytReady = true; } }
+  });
+}
+
+function playYT() {
+  if (ytReady && ytPlayer) {
+    ytPlayer.seekTo(60, true);
+    ytPlayer.playVideo();
+    ytPlayer.unMute();
+  }
+}
+
+/* ============================================================
+   SCENE MANAGEMENT
+   ============================================================ */
+const scenes = ['loading', 'scene1', 'scene2', 'scene3', 'scene4', 'scene5', 'scene6'];
+let currentScene = 'loading';
+
+function switchScene(id) {
+  document.getElementById(currentScene).classList.remove('active');
+  currentScene = id;
+  document.getElementById(id).classList.add('active');
+}
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function typeText(el, text, speed = 55) {
+  el.textContent = '';
+  el.classList.add('visible');
+  for (let i = 0; i < text.length; i++) {
+    el.textContent += text[i];
+    await sleep(speed);
+  }
+}
+
+/* ============================================================
+   CAKE DOTS DECORATION
+   ============================================================ */
+function addDots(containerId, count) {
+  const c = document.getElementById(containerId);
+  const dotColors = ['#ffd700', '#fff', '#ff6b9d', '#7c4dff', '#69f0ae'];
+  for (let i = 0; i < count; i++) {
+    const d = document.createElement('div');
+    d.className = 'cake-dot';
+    d.style.left = (10 + Math.random() * 80) + '%';
+    d.style.top = (20 + Math.random() * 60) + '%';
+    d.style.background = dotColors[Math.floor(Math.random() * dotColors.length)];
+    c.appendChild(d);
+  }
+}
+addDots('dotsTop', 8);
+addDots('dotsMid', 12);
+addDots('dotsBot', 15);
+
+/* ============================================================
+   LOADING → START
+   ============================================================ */
+let loadProgress = 0;
+const progressBar = document.getElementById('progressBar');
+const startBtn = document.getElementById('startBtn');
+const loadInterval = setInterval(() => {
+  loadProgress += Math.random() * 15 + 5;
+  if (loadProgress >= 100) {
+    loadProgress = 100;
+    clearInterval(loadInterval);
+    startBtn.style.display = 'block';
+  }
+  progressBar.style.width = loadProgress + '%';
+}, 200);
+
+startBtn.addEventListener('click', () => {
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  startAmbient();
+  switchScene('scene1');
+  runScene1();
+});
+
+/* ============================================================
+   SCENE 1 — Opening Cinematic
+   ============================================================ */
+async function runScene1() {
+  const s1t1 = document.getElementById('s1t1');
+  const s1t2 = document.getElementById('s1t2');
+  const s1t3 = document.getElementById('s1t3');
+  const s1t4 = document.getElementById('s1t4');
+  const s1Name = document.getElementById('s1Name');
+
+  await sleep(600);
+  await typeText(s1t1, 'HEY!!!', 80);
+  playChime();
+  await sleep(800);
+
+  await typeText(s1t2, 'Tunggu dulu...', 70);
+  playChime();
+  await sleep(900);
+
+  await typeText(s1t3, 'Ada seseorang yang ulang tahun hari ini!!!', 50);
+  playChime();
+  await sleep(1000);
+
+  /* suspense shake */
+  s1t4.classList.add('visible');
+  await typeText(s1t4, 'Dan orang itu adalah...', 70);
+  playChime();
+  await sleep(800);
+
+  /* shake effect */
+  document.getElementById('scene1').classList.add('shake');
+  await sleep(500);
+  document.getElementById('scene1').classList.remove('shake');
+  await sleep(300);
+
+  /* NAME REVEAL */
+  s1Name.classList.add('show');
+  playFanfare();
+  spawnFireworks(12, 2500);
+  spawnConfetti(120);
+
+  await sleep(4000);
+
+  /* transition to scene 2 */
+  switchScene('scene2');
+  runScene2();
+}
+
+/* ============================================================
+   SCENE 2 — Celebration
+   ============================================================ */
+async function runScene2() {
+  const s2yay = document.getElementById('s2yay');
+  const s2hbd = document.getElementById('s2hbd');
+  const s2emoji = document.getElementById('s2emoji');
+
+  await sleep(400);
+  s2yay.style.opacity = '1'; s2yay.style.animation = 'popIn .5s ease both';
+  playCheering();
+  spawnConfetti(80);
+
+  await sleep(700);
+  s2hbd.style.opacity = '1'; s2hbd.style.animation = 'popIn .5s ease both';
+  playCheering();
+
+  await sleep(700);
+  s2emoji.style.opacity = '1'; s2emoji.style.animation = 'popIn .5s ease both';
+
+  await sleep(3000);
+  switchScene('scene3');
+  runScene3();
+}
+
+/* ============================================================
+   SCENE 3 — Birthday Message
+   ============================================================ */
+async function runScene3() {
+  const lines = document.querySelectorAll('#scene3 .line');
+  for (let i = 0; i < lines.length; i++) {
+    await sleep(i === 0 ? 600 : 1400);
+    lines[i].classList.add('visible');
+    playChime();
+  }
+  await sleep(2000);
+  switchScene('scene4');
+}
+
+/* ============================================================
+   SCENE 4 — Buka Hadiah
+   ============================================================ */
+const openGiftBtn = document.getElementById('openGiftBtn');
+const giftBox = document.getElementById('giftBox');
+const giftReveal = document.getElementById('giftReveal');
+let giftOpened = false;
+
+openGiftBtn.addEventListener('click', () => {
+  if (giftOpened) return;
+  giftOpened = true;
+  openGiftBtn.style.display = 'none';
+
+  /* open animation */
+  giftBox.classList.add('opened');
+  giftBox.classList.add('sweeping');
+  playSparkle();
+  spawnConfetti(150);
+  spawnFireworks(10, 2000);
+
+  /* start YouTube music */
+  playYT();
+  stopAmbient();
+
+  setTimeout(() => {
+    giftReveal.classList.add('show');
+    playSparkle();
+  }, 1200);
+
+  setTimeout(() => {
+    switchScene('scene5');
+  }, 5000);
+});
+
+/* ============================================================
+   SCENE 5 — Cake
+   ============================================================ */
+const blowBtn = document.getElementById('blowBtn');
+let candlesBlown = false;
+
+blowBtn.addEventListener('click', () => {
+  if (candlesBlown) return;
+  candlesBlown = true;
+  blowBtn.disabled = true;
+
+  const flames = document.querySelectorAll('[data-flame]');
+  flames.forEach((flame, i) => {
+    setTimeout(() => {
+      flame.classList.add('out');
+      /* smoke */
+      const wrap = flame.parentElement;
+      const rect = wrap.getBoundingClientRect();
+      const cakeRect = document.getElementById('cakeContainer').getBoundingClientRect();
+      const sx = rect.left - cakeRect.left + rect.width / 2;
+      const sy = rect.top - cakeRect.top;
+      for (let j = 0; j < 4; j++) {
+        const sm = document.createElement('div');
+        sm.className = 'smoke-p';
+        sm.style.left = sx + 'px';
+        sm.style.top = sy + 'px';
+        sm.style.animationDelay = (j * .12) + 's';
+        document.getElementById('cakeContainer').appendChild(sm);
+        setTimeout(() => sm.remove(), 2000);
+      }
+    }, i * 200);
+  });
+
+  /* after all candles out — fireworks! */
+  setTimeout(() => {
+    playClap();
+    spawnFireworks(20, 4000);
+    spawnConfetti(200);
+    playCheering();
+  }, 1200);
+
+  setTimeout(() => {
+    switchScene('scene6');
+    runScene6();
+  }, 6000);
+});
+
+/* ============================================================
+   SCENE 6 — Final
+   ============================================================ */
+async function runScene6() {
+  const lines = document.querySelectorAll('#scene6 .s6-line');
+  for (let i = 0; i < lines.length; i++) {
+    await sleep(i === 0 ? 800 : 2000);
+    lines[i].classList.add('visible');
+    playChime();
+  }
+
+  /* occasional small fireworks in corners */
+  setInterval(() => {
+    if (currentScene !== 'scene6') return;
+    const x = Math.random() > .5 ? W * .1 + Math.random() * W * .2 : W * .7 + Math.random() * W * .2;
+    fireworks.push(new Firework(x, H * .1 + Math.random() * H * .3));
+  }, 3000);
+}
+
+/* ============================================================
+   HANDLE RESIZE — reinit stars
+   ============================================================ */
+window.addEventListener('resize', () => { initStars(); });
+</script>
+</body>
+</html>
